@@ -128,7 +128,7 @@ func == (first: Client.RequestId, second: Client.RequestId) -> Bool {
 extension Client: SRWebSocketDelegate {
     public func webSocketDidOpen(webSocket: SRWebSocket!) {
         // TODO: Add support for session token and user authetication.
-        self.sendOperationAsync(.Connect(applicationId: applicationId, sessionToken: ""))
+        self.sendOperationAsync(.Connect(applicationId: applicationId, sessionToken: PFUser.currentUser()?.sessionToken))
     }
 
     public func webSocket(webSocket: SRWebSocket!, didFailWithError error: NSError!) {
@@ -227,8 +227,9 @@ extension Client {
 
             switch response {
             case .Connected:
+                let sessionToken = PFUser.currentUser()?.sessionToken
                 self.subscriptions.forEach {
-                    self.sendOperationAsync(.Subscribe(requestId: $0.requestId, query: $0.query))
+                    self.sendOperationAsync(.Subscribe(requestId: $0.requestId, query: $0.query, sessionToken: sessionToken))
                 }
 
             case .Redirect:

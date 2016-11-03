@@ -11,17 +11,25 @@ import Foundation
 import Parse
 
 enum ClientOperation {
-    case Connect(applicationId: String, sessionToken: String)
-    case Subscribe(requestId: Client.RequestId, query: PFQuery)
+    case Connect(applicationId: String, sessionToken: String?)
+    case Subscribe(requestId: Client.RequestId, query: PFQuery, sessionToken: String?)
     case Unsubscribe(requestId: Client.RequestId)
 
     var JSONObjectRepresentation: [String : AnyObject] {
         switch self {
         case .Connect(let applicationId, let sessionToken):
-            return [ "op": "connect", "applicationId": applicationId, "sessionToken": sessionToken ]
+            var result: [String: AnyObject] = [ "op": "connect", "applicationId": applicationId ]
+            if let sessionToken = sessionToken {
+                result["sessionToken"] = sessionToken
+            }
+            return result
 
-        case .Subscribe(let requestId, let query):
-            return [ "op": "subscribe", "requestId": requestId.value, "query": Dictionary<String, AnyObject>(query: query) ]
+        case .Subscribe(let requestId, let query, let sessionToken):
+            var result: [String: AnyObject] = [ "op": "subscribe", "requestId": requestId.value, "query": Dictionary<String, AnyObject>(query: query)]
+            if let sessionToken = sessionToken {
+                result["sessionToken"] = sessionToken
+            }
+            return result
 
         case .Unsubscribe(let requestId):
             return [ "op": "unsubscribe", "requestId": requestId.value ]

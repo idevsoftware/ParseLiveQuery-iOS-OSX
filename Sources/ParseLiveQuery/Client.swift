@@ -149,7 +149,7 @@ extension Client {
         subscriptions.append(subscriptionRecord)
         
         if socket?.readyState == .OPEN {
-            sendOperationAsync(.Subscribe(requestId: subscriptionRecord.requestId, query: query))
+            sendOperationAsync(.Subscribe(requestId: subscriptionRecord.requestId, query: query, sessionToken: PFUser.currentUser()?.sessionToken))
         } else if socket == nil || socket?.readyState != .CONNECTING {
             if !userDisconnected {
                 reconnect()
